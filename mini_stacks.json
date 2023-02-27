@@ -1,0 +1,36 @@
+{
+  "children": [
+    {
+      "name": "genunix syscall_mstate",
+      "value": 79
+    },
+    {
+      "children": [
+        {
+          "name": "ufs ufs_getpage",
+          "value": 10,
+          "children": [
+            {
+              "name": "ufs segvn_unmap",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "name": "unix hwblkclr",
+          "value": 7,
+          "children": [
+            {
+              "name": "genunix segvn_unmap",
+              "value": 5
+            }
+          ]
+        }
+      ],
+      "name": "unix page_lookup",
+      "value": 21
+    }
+  ],
+  "name": "root",
+  "value": 100
+}
