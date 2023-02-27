@@ -53,6 +53,25 @@ const filterJson = (json, name) => {
   return recur(json, name);
 };
 
+// const addIdIntoJSON = (json) => {
+//   const recur = (item) => {
+//     if ((item?.children ?? []).length === 0) {
+//       item.id = crypto.randomUUID().toString();
+//       return item;
+//     }
+
+//     for (let i = 0; i < (item?.children ?? []).length; i++) {
+//       temp = recur(item.children[i]);
+//       item.id = crypto.randomUUID().toString();
+//       item.children[i] = temp;
+//     }
+//     return item;
+//   };
+//   return recur(json);
+// };
+
+// console.log(JSON.stringify(a(structuredClone(json))));
+
 // name?: string
 const recursionJson = (jsonObj, name) => {
   const data = [];

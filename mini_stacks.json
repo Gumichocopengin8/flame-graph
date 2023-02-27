@@ -2,35 +2,42 @@
   "children": [
     {
       "name": "genunix syscall_mstate",
-      "value": 79
+      "value": 79,
+      "id": "08a367de-a368-49da-9934-a1dd459722ee"
     },
     {
       "children": [
         {
           "name": "ufs ufs_getpage",
           "value": 10,
+          "id": "e32f0385-59bb-4961-b006-95c0d3e648d0",
           "children": [
             {
               "name": "ufs segvn_unmap",
-              "value": 3
+              "value": 3,
+              "id": "1315345e-6178-455c-8c87-0063de6b4d14"
             }
           ]
         },
         {
           "name": "unix hwblkclr",
           "value": 7,
+          "id": "a1d2570f-a8e0-4bff-befb-a7e334ee1ab9",
           "children": [
             {
               "name": "genunix segvn_unmap",
-              "value": 5
+              "value": 5,
+              "id": "40ff041b-3703-4d2d-92d4-07b8d9a50d01"
             }
           ]
         }
       ],
       "name": "unix page_lookup",
-      "value": 21
+      "value": 21,
+      "id": "3ae186fe-d563-46bf-851c-c501fb4b60e7"
     }
   ],
   "name": "root",
-  "value": 100
+  "value": 100,
+  "id": "88071083-3e12-4228-bfd1-ae825d91bacc"
 }
