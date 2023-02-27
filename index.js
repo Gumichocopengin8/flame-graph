@@ -26,14 +26,14 @@ const stringToColour = (str) => {
   return color;
 };
 
-// name?: string
-const filterJson = (json, name) => {
-  if (name === undefined) {
+// id?: string
+const filterJson = (json, id) => {
+  if (id === undefined) {
     return json;
   }
 
-  const recur = (item, name) => {
-    if (item.name === name) {
+  const recur = (item, id) => {
+    if (item.id === id) {
       return item;
     }
 
@@ -42,7 +42,7 @@ const filterJson = (json, name) => {
     }
 
     for (let i = 0; i < (item?.children ?? []).length; i++) {
-      temp = recur(item.children[i], name);
+      temp = recur(item.children[i], id);
       if (temp && Array.from(Object.keys(temp)).length !== 0) {
         item.children = [temp];
         return item;
@@ -50,7 +50,7 @@ const filterJson = (json, name) => {
     }
   };
 
-  return recur(json, name);
+  return recur(json, id);
 };
 
 // const addIdIntoJSON = (json) => {
@@ -72,14 +72,14 @@ const filterJson = (json, name) => {
 
 // console.log(JSON.stringify(a(structuredClone(json))));
 
-// name?: string
-const recursionJson = (jsonObj, name) => {
+// id?: string
+const recursionJson = (jsonObj, id) => {
   const data = [];
   const recur = (item, start = 0, level = 0) => {
     const temp = {
-      name: item.name,
+      name: item.id,
       value: [level, start, start + item.value, item.name], // [level, start_val, end_val, name]
-      itemStyle: { normal: { color: stringToColour(item.name) } },
+      itemStyle: { normal: { color: stringToColour(item.id) } },
     };
     data.push(temp);
 
@@ -89,7 +89,7 @@ const recursionJson = (jsonObj, name) => {
       prevStart = prevStart + item.children[i].value;
     }
   };
-  const filteredJson = filterJson(structuredClone(jsonObj), name);
+  const filteredJson = filterJson(structuredClone(jsonObj), id);
   recur(filteredJson);
   return data;
 };
@@ -118,7 +118,7 @@ const renderItem = (params, api) => {
 const option = {
   tooltip: {
     formatter: (params) => {
-      return `${params.marker} ${params.name}: ${params.value[2] - params.value[1]}`;
+      return `${params.marker} ${params.value[3]}: ${params.value[2] - params.value[1]}`;
     },
   },
   title: [
