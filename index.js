@@ -1,42 +1,4 @@
-const json = JSON.parse(
-  `{
-    "children": [
-      {
-        "name": "genunix syscall_mstate",
-        "value": 79
-      },
-      {
-        "children": [
-          {
-            "name": "ufs ufs_getpage",
-            "value": 10,
-            "children": [
-              {
-                "name": "ufs segvn_unmap",
-                "value": 3
-              }
-            ]
-          },
-          {
-            "name": "unix hwblkclr",
-            "value": 7,
-            "children": [
-              {
-                "name": "genunix segvn_unmap",
-                "value": 5
-              }
-            ]
-          }
-        ],
-        "name": "unix page_lookup",
-        "value": 21
-      }
-    ],
-    "name": "root",
-    "value": 100
-  }
-  `
-);
+// import { mini_json, json } from './json.js'; // these are imported from index.html
 
 const dom = document.getElementById('chart-container');
 const myChart = echarts.init(dom, null, {
@@ -50,13 +12,55 @@ const getRandomColor = () => {
   return colors[index];
 };
 
-const recursionJson = (json) => {
+const stringToColour = (str) => {
+  let hash = 0;
+  for (var i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  let color = '#';
+  for (let i = 0; i < 3; i++) {
+    const value = (hash >> (i * 8)) & 0xff;
+    const v = '00' + value.toString(16);
+    color += v.substring(v.length - 2);
+  }
+  return color;
+};
+
+// name?: string
+const filterJson = (json, name) => {
+  if (name === undefined) {
+    return json;
+  }
+
+  const recur = (item, name) => {
+    if (item.name === name) {
+      return item;
+    }
+
+    if ((item?.children ?? []).length === 0) {
+      return undefined;
+    }
+
+    for (let i = 0; i < (item?.children ?? []).length; i++) {
+      temp = recur(item.children[i], name);
+      if (temp && Array.from(Object.keys(temp)).length !== 0) {
+        item.children = [temp];
+        return item;
+      }
+    }
+  };
+
+  return recur(json, name);
+};
+
+// name?: string
+const recursionJson = (jsonObj, name) => {
   const data = [];
   const recur = (item, start = 0, level = 0) => {
     const temp = {
       name: item.name,
       value: [level, start, start + item.value, item.name], // [level, start_val, end_val, name]
-      itemStyle: { normal: { color: getRandomColor() } },
+      itemStyle: { normal: { color: stringToColour(item.name) } },
     };
     data.push(temp);
 
@@ -66,7 +70,8 @@ const recursionJson = (json) => {
       prevStart = prevStart + item.children[i].value;
     }
   };
-  recur(json);
+  const filteredJson = filterJson(structuredClone(jsonObj), name);
+  recur(filteredJson);
   return data;
 };
 
@@ -133,5 +138,13 @@ const option = {
 if (option && typeof option === 'object') {
   myChart.setOption(option);
 }
+
+// click event
+myChart.on('click', (params) => {
+  myChart.setOption({
+    ...option,
+    series: [{ data: recursionJson(json, params.data.name) }],
+  });
+});
 
 window.addEventListener('resize', myChart.resize);
