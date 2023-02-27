@@ -44,32 +44,11 @@ const myChart = echarts.init(dom, null, {
   useDirtyRect: false,
 });
 
-const data = [];
-const dataCount = 10;
-const startTime = 0;
-const categories = ['categoryA', 'categoryB', 'categoryC', 'categoryD', 'categoryE'];
-const types = [
-  { name: 'JS Heap', color: 'orange' },
-  { name: 'Documents', color: '#bd6d6c' },
-  { name: 'Nodes', color: '#75d874' },
-  { name: 'Listeners', color: '#e0bc78' },
-  { name: 'GPU Memory', color: '#dc77dc' },
-  { name: 'GPU', color: '#72b362' },
-];
-// Generate mock data
-categories.forEach(function (category, index) {
-  let baseTime = startTime;
-  for (let i = 0; i < dataCount; i++) {
-    const typeItem = types[index];
-    const duration = (index + 1) * 10000;
-    data.push({
-      name: typeItem.name,
-      value: [index, baseTime, (baseTime += duration)],
-      itemStyle: { normal: { color: typeItem.color } },
-    });
-    baseTime += 2000;
-  }
-});
+const getRandomColor = () => {
+  const colors = ['#893448', '#d95850', '#eb8146', '#ffb248', '#f2d643', '#ebdba4'];
+  const index = Math.floor(Math.random() * colors.length);
+  return colors[index];
+};
 
 const recursionJson = (json) => {
   const data = [];
@@ -77,7 +56,7 @@ const recursionJson = (json) => {
     const temp = {
       name: item.name,
       value: [level, start, start + item.value], // [level, start, end]
-      itemStyle: { normal: { color: 'pink' } },
+      itemStyle: { normal: { color: getRandomColor() } },
     };
     data.push(temp);
 
@@ -91,47 +70,7 @@ const recursionJson = (json) => {
   return data;
 };
 
-console.log(recursionJson(json));
-
-const data1 = [
-  {
-    name: 'root',
-    value: [0, 0, 100],
-    itemStyle: { normal: { color: 'pink' } },
-  },
-  {
-    name: 'genunix syscall_mstate',
-    value: [1, 0, 79],
-    itemStyle: { normal: { color: 'blue' } },
-  },
-  {
-    name: 'unix page_lookup',
-    value: [1, 79, 100],
-    itemStyle: { normal: { color: 'orange' } },
-  },
-  {
-    name: 'ufs ufs_getpage',
-    value: [2, 79, 89],
-    itemStyle: { normal: { color: 'skyblue' } },
-  },
-  {
-    name: 'unix hwblkclr',
-    value: [2, 89, 96],
-    itemStyle: { normal: { color: 'gray' } },
-  },
-  {
-    name: 'ufs segvn_unmap',
-    value: [3, 79, 82],
-    itemStyle: { normal: { color: 'teal' } },
-  },
-  {
-    name: 'genunix segvn_unmap',
-    value: [3, 89, 94],
-    itemStyle: { normal: { color: 'cyan' } },
-  },
-];
-
-function renderItem(params, api) {
+const renderItem = (params, api) => {
   const categoryIndex = api.value(0);
   const start = api.coord([api.value(1), categoryIndex]);
   const end = api.coord([api.value(2), categoryIndex]);
@@ -148,7 +87,7 @@ function renderItem(params, api) {
     },
     style: api.style(),
   };
-}
+};
 const option = {
   tooltip: {
     formatter: (params) => {
@@ -158,7 +97,7 @@ const option = {
     },
   },
   xAxis: {
-    min: startTime,
+    min: 0,
     scale: true,
     show: false,
   },
@@ -170,12 +109,11 @@ const option = {
     {
       type: 'custom',
       renderItem: renderItem,
+      name: 'sdf',
       encode: {
         x: [0, 1],
         y: 0,
       },
-      // data: data,
-      // data: data1,
       data: recursionJson(json),
     },
   ],
