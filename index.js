@@ -5,25 +5,16 @@ const myChart = echarts.init(dom, null, {
   renderer: 'canvas',
   useDirtyRect: false,
 });
-
-const getRandomColor = () => {
-  const colors = ['#893448', '#d95850', '#eb8146', '#ffb248', '#f2d643', '#ebdba4'];
-  const index = Math.floor(Math.random() * colors.length);
-  return colors[index];
-};
-
-const stringToColour = (str) => {
-  let hash = 0;
-  for (var i = 0; i < str.length; i++) {
-    hash = str.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  let color = '#';
-  for (let i = 0; i < 3; i++) {
-    const value = (hash >> (i * 8)) & 0xff;
-    const v = '00' + value.toString(16);
-    color += v.substring(v.length - 2);
-  }
-  return color;
+const ColorTypes = {
+  root: '#8fd3e8',
+  genunix: '#d95850',
+  unix: '#eb8146',
+  ufs: '#ffb248',
+  FSS: '#f2d643',
+  namefs: '#ebdba4',
+  doorfs: '#fcce10',
+  lofs: '#b5c334',
+  lofs: '#9bca63',
 };
 
 // id?: string
@@ -59,7 +50,7 @@ const filterJson = (json, id) => {
 //       item.id = crypto.randomUUID().toString();
 //       return item;
 //     }
-
+//
 //     for (let i = 0; i < (item?.children ?? []).length; i++) {
 //       temp = recur(item.children[i]);
 //       item.id = crypto.randomUUID().toString();
@@ -70,7 +61,7 @@ const filterJson = (json, id) => {
 //   return recur(json);
 // };
 
-// console.log(JSON.stringify(a(structuredClone(json))));
+// console.log(JSON.stringify(addIdIntoJSON(structuredClone(json))));
 
 // id?: string
 const recursionJson = (jsonObj, id) => {
@@ -79,7 +70,7 @@ const recursionJson = (jsonObj, id) => {
     const temp = {
       name: item.id,
       value: [level, start, start + item.value, item.name], // [level, start_val, end_val, name]
-      itemStyle: { normal: { color: stringToColour(item.id) } },
+      itemStyle: { normal: { color: ColorTypes[item.name.split(' ')[0]] } },
     };
     data.push(temp);
 
@@ -118,7 +109,7 @@ const renderItem = (params, api) => {
 const option = {
   tooltip: {
     formatter: (params) => {
-      return `${params.marker} ${params.value[3]}: ${params.value[2] - params.value[1]}`;
+      return `${params.marker} ${params.value[3]}: (${params.value[2] - params.value[1]} samples)`;
     },
   },
   title: [
@@ -133,12 +124,9 @@ const option = {
     },
   ],
   xAxis: {
-    min: 0,
-    scale: true,
     show: false,
   },
   yAxis: {
-    data: [],
     show: false,
   },
   series: [
@@ -148,6 +136,10 @@ const option = {
       encode: {
         x: [0, 1],
         y: 0,
+      },
+      itemStyle: {
+        borderWidth: 1,
+        borderColor: '#fff',
       },
       data: recursionJson(json),
     },
