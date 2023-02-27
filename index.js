@@ -45,25 +45,6 @@ const filterJson = (json, id) => {
   return recur(json, id);
 };
 
-// const addIdIntoJSON = (json) => {
-//   const recur = (item) => {
-//     if ((item?.children ?? []).length === 0) {
-//       item.id = crypto.randomUUID().toString();
-//       return item;
-//     }
-//
-//     for (let i = 0; i < (item?.children ?? []).length; i++) {
-//       temp = recur(item.children[i]);
-//       item.id = crypto.randomUUID().toString();
-//       item.children[i] = temp;
-//     }
-//     return item;
-//   };
-//   return recur(json);
-// };
-
-// console.log(JSON.stringify(addIdIntoJSON(structuredClone(json))));
-
 // id?: string
 const recursionJson = (jsonObj, id) => {
   const data = [];
@@ -89,6 +70,25 @@ const recursionJson = (jsonObj, id) => {
   recur(filteredJson);
   return data;
 };
+
+const heightOfJson = (json) => {
+  const recur = (item, level = 0) => {
+    if ((item?.children ?? []).length === 0) {
+      return level;
+    }
+
+    let maxLevel = level;
+    for (const child of (item?.children ?? []).length) {
+      const tempLevel = recur(child, level + 1);
+      maxLevel = Math.max(maxLevel, tempLevel);
+    }
+    return maxLevel;
+  };
+
+  return recur(json);
+};
+
+const levelOfOriginalJson = heightOfJson(json);
 
 const renderItem = (params, api) => {
   const level = api.value(0);
@@ -134,6 +134,7 @@ const option = {
   },
   yAxis: {
     show: false,
+    max: levelOfOriginalJson,
   },
   series: [
     {
