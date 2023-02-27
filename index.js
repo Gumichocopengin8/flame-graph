@@ -5,6 +5,7 @@ const myChart = echarts.init(dom, null, {
   renderer: 'canvas',
   useDirtyRect: false,
 });
+
 const ColorTypes = {
   root: '#8fd3e8',
   genunix: '#d95850',
@@ -14,7 +15,7 @@ const ColorTypes = {
   namefs: '#ebdba4',
   doorfs: '#fcce10',
   lofs: '#b5c334',
-  lofs: '#9bca63',
+  zfs: '#1bca93',
 };
 
 // id?: string
@@ -28,12 +29,8 @@ const filterJson = (json, id) => {
       return item;
     }
 
-    if ((item?.children ?? []).length === 0) {
-      return undefined;
-    }
-
-    for (let i = 0; i < (item?.children ?? []).length; i++) {
-      temp = recur(item.children[i], id);
+    for (const child of item?.children ?? []) {
+      const temp = recur(child, id);
       if (temp && Array.from(Object.keys(temp)).length !== 0) {
         item.children = [temp];
         item.value = temp.value; // change the parents' values
@@ -42,7 +39,7 @@ const filterJson = (json, id) => {
     }
   };
 
-  return recur(json, id);
+  return recur(json, id) ?? json;
 };
 
 // id?: string
@@ -61,9 +58,9 @@ const recursionJson = (jsonObj, id) => {
     data.push(temp);
 
     let prevStart = start;
-    for (let i = 0; i < (item?.children ?? []).length; i++) {
-      recur(item.children[i], prevStart, level + 1);
-      prevStart = prevStart + item.children[i].value;
+    for (const child of item?.children ?? []) {
+      recur(child, prevStart, level + 1);
+      prevStart = prevStart + child.value;
     }
   };
 
@@ -78,7 +75,7 @@ const heightOfJson = (json) => {
     }
 
     let maxLevel = level;
-    for (const child of (item?.children ?? []).length) {
+    for (const child of item?.children ?? []) {
       const tempLevel = recur(child, level + 1);
       maxLevel = Math.max(maxLevel, tempLevel);
     }
@@ -99,12 +96,7 @@ const renderItem = (params, api) => {
   return {
     type: 'rect',
     transition: ['shape'],
-    shape: {
-      x: start[0],
-      y: start[1] - height / 2,
-      width: end[0] - start[0],
-      height: height,
-    },
+    shape: { x: start[0], y: start[1] - height / 2, width: end[0] - start[0], height: height },
     style: api.style({
       text: api.value(3),
       textFill: 'blue',
@@ -120,13 +112,10 @@ const option = {
   },
   title: [
     {
-      text: 'Flame Chart',
+      text: 'Flame Graph',
       left: 'center',
       top: 10,
-      textStyle: {
-        fontWeight: 'normal',
-        fontSize: 20,
-      },
+      textStyle: { fontWeight: 'normal', fontSize: 20 },
     },
   ],
   xAxis: {
@@ -147,6 +136,9 @@ const option = {
       itemStyle: {
         borderWidth: 1,
         borderColor: '#fff',
+      },
+      labelLayout: {
+        hideOverlap: true,
       },
       data: recursionJson(json),
     },
