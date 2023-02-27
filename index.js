@@ -55,7 +55,7 @@ const recursionJson = (json) => {
   const recur = (item, start = 0, level = 0) => {
     const temp = {
       name: item.name,
-      value: [level, start, start + item.value], // [level, start, end]
+      value: [level, start, start + item.value, item.name], // [level, start_val, end_val, name]
       itemStyle: { normal: { color: getRandomColor() } },
     };
     data.push(temp);
@@ -85,17 +85,29 @@ const renderItem = (params, api) => {
       width: end[0] - start[0],
       height: height,
     },
-    style: api.style(),
+    style: api.style({
+      text: api.value(3),
+      textFill: 'blue',
+    }),
   };
 };
 const option = {
   tooltip: {
     formatter: (params) => {
-      return `${params.marker} ${params.name}: ${params.value[1]}, ${params.value[2]}, ${
-        params.value[2] - params.value[1]
-      }`;
+      return `${params.marker} ${params.name}: ${params.value[2] - params.value[1]}`;
     },
   },
+  title: [
+    {
+      text: 'Flame Chart',
+      left: 'center',
+      top: 10,
+      textStyle: {
+        fontWeight: 'normal',
+        fontSize: 20,
+      },
+    },
+  ],
   xAxis: {
     min: 0,
     scale: true,
@@ -109,7 +121,6 @@ const option = {
     {
       type: 'custom',
       renderItem: renderItem,
-      name: 'sdf',
       encode: {
         x: [0, 1],
         y: 0,
