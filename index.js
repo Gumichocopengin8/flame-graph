@@ -91,9 +91,9 @@ const recursionJson = (jsonObj, id) => {
 };
 
 const renderItem = (params, api) => {
-  const categoryIndex = api.value(0);
-  const start = api.coord([api.value(1), categoryIndex]);
-  const end = api.coord([api.value(2), categoryIndex]);
+  const level = api.value(0);
+  const start = api.coord([api.value(1), level]);
+  const end = api.coord([api.value(2), level]);
   const height = api.size([0, 1])[1];
 
   return {
@@ -158,9 +158,13 @@ if (option && typeof option === 'object') {
 
 // click event
 myChart.on('click', (params) => {
+  const data = recursionJson(json, params.data.name);
+  const rootValue = data[0].value[2];
+
   myChart.setOption({
     ...option,
-    series: [{ data: recursionJson(json, params.data.name) }],
+    xAxis: { max: rootValue },
+    series: [{ data }],
   });
 });
 
