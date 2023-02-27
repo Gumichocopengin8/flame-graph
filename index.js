@@ -36,6 +36,7 @@ const filterJson = (json, id) => {
       temp = recur(item.children[i], id);
       if (temp && Array.from(Object.keys(temp)).length !== 0) {
         item.children = [temp];
+        item.value = temp.value; // change the parents' values
         return item;
       }
     }
@@ -66,10 +67,14 @@ const filterJson = (json, id) => {
 // id?: string
 const recursionJson = (jsonObj, id) => {
   const data = [];
+  const filteredJson = filterJson(structuredClone(jsonObj), id);
+  const rootVal = filteredJson.value;
+
   const recur = (item, start = 0, level = 0) => {
     const temp = {
       name: item.id,
-      value: [level, start, start + item.value, item.name], // [level, start_val, end_val, name]
+      // [level, start_val, end_val, name, percentage]
+      value: [level, start, start + item.value, item.name, (item.value / rootVal) * 100],
       itemStyle: { normal: { color: ColorTypes[item.name.split(' ')[0]] } },
     };
     data.push(temp);
@@ -80,7 +85,7 @@ const recursionJson = (jsonObj, id) => {
       prevStart = prevStart + item.children[i].value;
     }
   };
-  const filteredJson = filterJson(structuredClone(jsonObj), id);
+
   recur(filteredJson);
   return data;
 };
@@ -109,7 +114,8 @@ const renderItem = (params, api) => {
 const option = {
   tooltip: {
     formatter: (params) => {
-      return `${params.marker} ${params.value[3]}: (${params.value[2] - params.value[1]} samples)`;
+      const samples = params.value[2] - params.value[1];
+      return `${params.marker} ${params.value[3]}: (${samples} samples, ${params.value[4]}%)`;
     },
   },
   title: [
